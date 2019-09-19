@@ -1,4 +1,4 @@
-BEGIN,
+BEGIN;
 
 TRUNCATE
     beer_diary_reviews,
@@ -8,9 +8,9 @@ TRUNCATE
 
 INSERT INTO beer_diary_users (user_name, full_name, password)
 VALUES
-    ('dunder', 'Dunder Mifflin', 'password'),
-    ('b.deboop', 'Bodeep Deboop', 'test'),
-    ('c.bloggs', 'Charlie Bloggs', 'open');
+    ('dunder', 'Dunder Mifflin', '$2a$12$I4lZCQPceojawzPuyARF3.bOfBwhEagZAruZwnC/wpGp7l9WfbZ1C'),
+    ('b.deboop', 'Bodeep Deboop', '$2a$12$lh6D.AjolWRQ9VKA5HzsDO6CV0uDukYTVEsBg/1tSofRNd4CLTyIO'),
+    ('c.bloggs', 'Charlie Bloggs', '$2a$12$6D1PD0xy70DJJdZO89EPh.e2W0mLMHIhLOe89Dr4F23.WgUWqXdVq');
 
 INSERT INTO beer_diary_beers (beer_id, name, brewery, image, abv, ibu, beer_style, description)
 VALUES
@@ -29,3 +29,5 @@ VALUES
     (2, '3', 1, 3, 'Floral', 'Tart & Funky', 3, 'Dolore voluptua sea takimata sit lorem. No at est eos.'),
     (3, '4', 2, 2, 'Piney', 'Crisp', 4, ''),
     (3, '5', 3, 1, 'Spicy', 'Fruit & Spice', 5, 'Duo sed sed stet clita et et et duo dolore,.');
+
+COMMIT;

@@ -5,6 +5,10 @@ const cors = require('cors');
 const {CLIENT_ORIGIN} = require('./config')
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
+const beersRouter = require('./beers/beers-router');
+const usersRouter = require('./users/users-router');
+const authRouter = require('./auth/auth-router');
+const reviewsRouter = require('./reviews/reviews-router');
 
 const app = express();
 
@@ -13,12 +17,13 @@ const morganOption = (NODE_ENV === 'production')
     : 'common';
 
 app.use(morgan(morganOption));
-app.use(
-    cors({
-        origin: CLIENT_ORIGIN
-    })
-);
+app.use(cors());
 app.use(helmet());
+
+app.use('/api/beers', beersRouter);
+app.use('/api/reviews', reviewsRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/auth', authRouter);
 
 app.get('/', (req, res) => {
     res.json({ok: true});
