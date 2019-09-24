@@ -8,13 +8,13 @@ TRUNCATE
 
 INSERT INTO beer_diary_users (user_name, full_name, password)
 VALUES
-    ('dunder', 'Dunder Mifflin', '$2a$12$I4lZCQPceojawzPuyARF3.bOfBwhEagZAruZwnC/wpGp7l9WfbZ1C'),
+    ('TestUser', 'Sample Tester', '$2a$12$mfQl7V7WwSvgwh5Uxmc0b.U0gCYLYNg18kLUvX5U23r7yMVhPPV3a'),
     ('b.deboop', 'Bodeep Deboop', '$2a$12$lh6D.AjolWRQ9VKA5HzsDO6CV0uDukYTVEsBg/1tSofRNd4CLTyIO'),
     ('c.bloggs', 'Charlie Bloggs', '$2a$12$6D1PD0xy70DJJdZO89EPh.e2W0mLMHIhLOe89Dr4F23.WgUWqXdVq');
 
 INSERT INTO beer_diary_beers (beer_id, name, brewery, image, abv, ibu, beer_style, description)
 VALUES
-    ('1', 'Snake Dog IPA', 'Flying Dog Brewery', 'image.png', 7.1, 60, 'IPA', 'A potent snakebite of Citra, Mosaic, Warrior, Simcoe, and Columbus hops gives this beer its citrus-forward superpower.'),
+    ('1', 'Snake Dog IPA', 'Flying Dog Brewery', '', 7.1, 60, 'IPA', 'A potent snakebite of Citra, Mosaic, Warrior, Simcoe, and Columbus hops gives this beer its citrus-forward superpower.'),
     ('2', 'Golden Ale', 'The Brewery', '', 5.4, 25, 'American Ale', ''),
     ('3', 'Test Beer 3', 'Test Brewery', '', 3.3, 33, 'Stout', 'Elitr labore tempor invidunt invidunt sed dolores et est lorem.'),
     ('4', 'Duff Beer', 'Duff Brewing', '', 4.4, 44, 'Lager', ''),

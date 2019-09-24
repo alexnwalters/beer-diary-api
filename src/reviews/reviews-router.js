@@ -45,7 +45,7 @@ reviewsRouter
             user_id
         )
             .then(reviews => {
-                res.json(reviews)
+                res.json(reviews.map(ReviewsService.serializeReviewWithBeerInfo))
             })
             .catch(next)
     })

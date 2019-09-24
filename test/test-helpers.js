@@ -95,7 +95,7 @@ function makeReviewsArray(users, beers) {
             aroma: 'Fruity',
             taste: 'Hop',
             notes: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?',
-            date_created: new Date('2029-01-22T16:28:32.615Z'),
+            date_created: '2029-01-22T16:28:32.615Z',
             date_modified: null,
         },
         {
@@ -108,7 +108,7 @@ function makeReviewsArray(users, beers) {
             aroma: 'Fruity',
             taste: 'Hop',
             notes: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?',
-            date_created: new Date('2029-01-22T16:28:32.615Z'),
+            date_created: '2029-01-22T16:28:32.615Z',
             date_modified: null,
         },
         {
@@ -121,7 +121,7 @@ function makeReviewsArray(users, beers) {
             aroma: 'Fruity',
             taste: 'Hop',
             notes: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?',
-            date_created: new Date('2029-01-22T16:28:32.615Z'),
+            date_created: '2029-01-22T16:28:32.615Z',
             date_modified: null,
         },
         {
@@ -134,7 +134,7 @@ function makeReviewsArray(users, beers) {
             aroma: 'Fruity',
             taste: 'Hop',
             notes: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?',
-            date_created: new Date('2029-01-22T16:28:32.615Z'),
+            date_created: '2029-01-22T16:28:32.615Z',
             date_modified: null,
         },
     ]
@@ -159,7 +159,7 @@ function makeExpectedReviewsWithBeerInfo(reviews, beers, user_id) {
             aroma: review.aroma,
             taste: review.taste,
             notes: review.notes,
-            date_created: review.date_created.toISOString(),
+            date_created: review.date_created,
             date_modified: review.date_modified || null,
             beer: {
                 id: beer.id,
@@ -176,29 +176,7 @@ function makeExpectedReviewsWithBeerInfo(reviews, beers, user_id) {
     })
 }
 
-function makeMaliciousBeer() {
-    const maliciousBeer = {
-        id: 4,
-        beer_id: 4,
-        name: 'Naughty naughty very naughty <script>alert("xss");</script>',
-        brewery: 'Naughty naughty very naughty <script>alert("xss");</script>',
-        abv: 44,
-        ibu: 44,
-        beer_style: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
-    }
-    const expectedBeer = {
-        ...makeExpectedBeer(maliciousBeer),
-        name: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
-        brewery: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
-        beer_style: `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`,
-    }
-    return {
-        maliciousBeer,
-        expectedBeer,
-    }
-}
-
-function makeMaliciousReview(user) {
+function makeMaliciousReview(user, beer) {
     const maliciousReview = {
         id: 911,
         user_id: user.id,
@@ -209,12 +187,14 @@ function makeMaliciousReview(user) {
         aroma: 'Fruity',
         taste: 'Hop',
         notes: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
-        date_created: new Date(),
+        date_modified: null
     }
+
     const expectedReview = {
-        ...makeExpectedReview([user], maliciousReview),
+        ...makeExpectedReviewsWithBeerInfo([maliciousReview], [beer], [user]),
         notes: `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`,
     }
+
     return {
         maliciousReview,
         expectedReview,
@@ -282,22 +262,12 @@ function seedDiaryTables(db, users, beers, reviews=[]) {
     })
 }
 
-function seedMaliciousBeer(db, user, beer) {
-    return seedUsers(db, [user])
-        .then(() =>
-            db
-                .into('beer_diary_beers')
-                .insert([beer])
-        )
-}
-
-function seedMaliciousReview(db, user, review) {
-    return seedUsers(db, [user])
-        .then(() =>
-            db
-                .into('beer_diary_reviews')
-                .insert([review])
-        )
+function seedMaliciousReview(db, user, beer, review) {
+    return db.transaction(async trx => {
+        await seedUsers(trx, [user])
+        await trx.into('beer_diary_beers').insert(beer)
+        await trx.into('beer_diary_reviews').insert(review)
+    })
 }
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
@@ -309,16 +279,15 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
 }
 
 module.exports = {
+    makeBeersArray,
     makeUsersArray,
     makeReviewsArray,
-    makeMaliciousBeer,
     makeMaliciousReview,
     makeDiaryFixtures,
     cleanTables,
     seedDiaryTables,
     seedUsers,
     makeExpectedReviewsWithBeerInfo,
-    seedMaliciousBeer,
     seedMaliciousReview,
     makeAuthHeader,
 }

@@ -3,7 +3,7 @@ const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe.only('Reviews Endpoints', function() {
+describe('Reviews Endpoints', function() {
     let db
 
     const {
@@ -36,8 +36,6 @@ describe.only('Reviews Endpoints', function() {
             )
 
             it('responds with 200 and an empty list', () => {
-                const testUserId = testUsers[0].id
-
                 return supertest(app)
                     .get(`/api/reviews/user`)
                     .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
@@ -67,6 +65,34 @@ describe.only('Reviews Endpoints', function() {
                     .expect(200, expectedReviews)
             })
         })
+
+        context(`Given an XSS attack review`, () => {
+            const testUser = helpers.makeUsersArray()[1]
+            const testBeer = helpers.makeBeersArray()
+            const {
+                maliciousReview,
+                expectedReview,
+            } = helpers.makeMaliciousReview(testUser, testBeer[1])
+      
+            beforeEach('insert malicious Review', () => {
+                return helpers.seedMaliciousReview(
+                    db,
+                    testUser,
+                    testBeer,
+                    maliciousReview,
+                )
+            })
+      
+            it('removes XSS attack content', () => {
+                return supertest(app)
+                    .get(`/api/reviews/user`)
+                    .set('Authorization', helpers.makeAuthHeader(testUser))
+                    .expect(200)
+                    .expect(res => {
+                        expect(res.body[0].notes).to.eql(expectedReview.notes)
+                    })
+            })
+          })
     })
 
     describe('POST /api/reviews', () => {
@@ -248,7 +274,7 @@ describe.only('Reviews Endpoints', function() {
                 )
             )
 
-            it('responds 204 for delete and checks for removed review', () => {
+            it('responds 204 for update and checks correct change', () => {
                 const idToUpdate = 2
                 const updatedReview = {
                     overall: 3,
@@ -257,7 +283,6 @@ describe.only('Reviews Endpoints', function() {
                     aroma: 'Bready',
                     taste: 'Malt',
                     notes: 'Updated Test Note',
-                    date_modified: new Date()
                 }
                 const expectedReviews = {
                     ...testReviews[idToUpdate - 1],

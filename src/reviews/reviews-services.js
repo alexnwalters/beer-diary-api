@@ -21,6 +21,32 @@ const ReviewsService = {
             date_created: new Date(review.date_created)
         }
     },
+    serializeReviewWithBeerInfo(review) {
+        const { beer } = review
+        return {
+            id: review.id,
+            overall: review.overall,
+            color: review.color,
+            drinkability: review.drinkability,
+            aroma: review.aroma,
+            taste: review.taste,
+            notes: xss(review.notes),
+            date_created: review.date_created,
+            date_modified: review.date_modified || null,
+            user_id: review.user_id,
+            beer: {
+                id: beer.id,
+                beer_id: beer.beer_id,
+                name: xss(beer.name),
+                brewery: xss(beer.brewery),
+                image: beer.image,
+                abv: beer.abv,
+                ibu: beer.ibu,
+                beer_style: xss(beer.beer_style),
+                description: beer.description,
+            }
+        }
+    },
     getReviewsByUser(db, user_id) {
         return db
             .from('beer_diary_reviews AS review')
