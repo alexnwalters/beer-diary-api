@@ -303,4 +303,50 @@ describe('Reviews Endpoints', function() {
             })
         })
     })
+
+    describe(`GET /api/reviews/beers/:beer_id`, () => {
+        context('Given no reviews', () => {
+            beforeEach('insert users', () => 
+                helpers.seedUsers(
+                    db,
+                    testUsers,
+                )
+            )
+
+            it('responds with 404', () => {
+                const beer_id = 12345
+                return supertest(app)
+                    .get(`/api/reviews/beers/${beer_id}`)
+                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+                    .expect(404, {error: { message: `No reviews exist` }})
+            })
+        })
+
+        context('Given there are reviews in database', () => {
+            beforeEach('Insert reviews', () =>
+                helpers.seedDiaryTables(
+                    db,
+                    testUsers,
+                    testBeers,
+                    testReviews,
+                )
+            )
+
+            it('responds 200 and returns expected reviews without users own review', () => {
+                const beer_id = 1
+                const user_id = 1
+
+                const expectedReviews = helpers.makeExpectedReviewsWithUsername(
+                    testReviews,
+                    testUsers,
+                    user_id,
+                    beer_id
+                )
+                return supertest(app)
+                    .get(`/api/reviews/beers/${beer_id}`)
+                    .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+                    .expect(200, expectedReviews)
+            })
+        })
+    })
 })

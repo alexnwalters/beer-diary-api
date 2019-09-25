@@ -98,4 +98,25 @@ reviewsRouter
         .catch(next)
     })
 
+reviewsRouter
+    .route('/beers/:beer_id')
+    .all(requireAuth)
+    .get((req, res, next) => {
+        
+        ReviewsService.getReviewsByBeer(
+            req.app.get('db'),
+            req.params.beer_id,
+            req.user.id
+        )
+            .then(reviews => {
+                if (!reviews.length) {
+                    return res.status(404).json({
+                        error: { message: `No reviews exist` }
+                    })
+                }
+                res.json(reviews.map(ReviewsService.serializeReviewWithUser))
+            })
+            .catch(next)
+    })
+
 module.exports = reviewsRouter

@@ -23,7 +23,7 @@ function requireAuth(req, res, next) {
                     return res.status(401).json({ error: 'Unauthorized request'})
                 
                 req.user = user    
-                next() // this is causing an error? http://goo.gl/rRqMUw
+                next()
             })
             .catch(err => {
                 console.error(err)

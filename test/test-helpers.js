@@ -114,7 +114,7 @@ function makeReviewsArray(users, beers) {
         {
             id: 3,
             user_id: users[1].id,
-            beer_id: beers[2].beer_id,
+            beer_id: beers[0].beer_id,
             overall: 5,
             color: 5,
             drinkability: 5,
@@ -172,6 +172,35 @@ function makeExpectedReviewsWithBeerInfo(reviews, beers, user_id) {
                 beer_style: beer.beer_style,
                 description: beer.description,
             }
+        }
+    })
+}
+
+function makeExpectedReviewsWithUsername(reviews, users, user_id, beer_id) {
+    const removeRequestor = reviews.filter(
+        review => review.user_id !== user_id
+    )
+   
+    const expectedReviews = removeRequestor.filter(
+        review => review.beer_id == beer_id
+    )
+
+    return expectedReviews.map(review => {
+        const user = users.find(
+            user => user.id === review.user_id
+        )
+        return {
+            beer_id: review.beer_id,
+            user_id: review.user_id,
+            overall: review.overall,
+            color: review.color,
+            drinkability: review.drinkability,
+            aroma: review.aroma,
+            taste: review.taste,
+            notes: review.notes,
+            date_created: review.date_created,
+            date_modified: review.date_modified || null,
+            user_name: user.user_name
         }
     })
 }
@@ -288,6 +317,7 @@ module.exports = {
     seedDiaryTables,
     seedUsers,
     makeExpectedReviewsWithBeerInfo,
+    makeExpectedReviewsWithUsername,
     seedMaliciousReview,
     makeAuthHeader,
 }

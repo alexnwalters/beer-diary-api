@@ -12,6 +12,7 @@ const ReviewsService = {
         return {
             id: review.id,
             beer_id: review.beer_id,
+            user_id: review.user_id,
             overall: review.overall,
             color: review.color,
             drinkability: review.drinkability,
@@ -103,6 +104,47 @@ const ReviewsService = {
             .where({ id })
             .update(updatedReview)
     },
+    getReviewsByBeer(db, beer_id, user_id) {
+        return db
+            .from('beer_diary_reviews AS review')
+            .select(
+                'review.beer_id',
+                'review.overall',
+                'review.color',
+                'review.drinkability',
+                'review.aroma',
+                'review.taste',
+                'review.notes',
+                'review.date_created',
+                'review.date_modified',
+                'review.user_id',
+                'user.user_name'
+            )
+            .whereNot('review.user_id', user_id)
+            .where('review.beer_id', beer_id)
+            .leftJoin(
+                'beer_diary_users AS user',
+                'review.user_id',
+                'user.id',
+            )            
+    },
+    serializeReviewWithUser(review) {
+        return {
+            id: review.id,
+            beer_id: review.beer_id,
+            overall: review.overall,
+            color: review.color,
+            drinkability: review.drinkability,
+            aroma: review.aroma,
+            taste: review.taste,
+            notes: xss(review.notes),
+            date_created: review.date_created,
+            date_modified: review.date_modified || null,
+            user_id: review.user_id,
+            user_name: review.user_name
+        }
+    },
+         
 }
 
 module.exports = ReviewsService
