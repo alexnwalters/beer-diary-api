@@ -1,12 +1,19 @@
 # Beer Diary API
 
-An Express Server use to run the Beer Diary app.
+An Express Server use to run the Beer Diary app. Used to authenticate users, and services the CRUD operations. 
 
 Live Demo: [Beer Diary](https://beer-diary-app.now.sh/)
 
 ## Setup
 
 Download and start the client-side application found at [beer-dairy-app](https://github.com/alexnwalters/beer-diary-app).
+
+## Skills
+
+* Node.js / Express
+* PostgreSQL
+* Knex
+* JWT / Bcrypt
 
 ## Scripts
 
